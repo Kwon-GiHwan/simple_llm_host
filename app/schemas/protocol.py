@@ -1,9 +1,38 @@
 """
-Chat completion schemas (OpenAI-compatible)
+OpenAI-compatible API protocol schemas
+All request/response models defined here
 """
 from pydantic import BaseModel, Field
 from typing import List, Literal, Optional
 
+
+# ============================================================================
+# Model Management Schemas
+# ============================================================================
+
+class ModelRegisterRequest(BaseModel):
+    """Request to register/load a model"""
+    model: str = Field(..., description="HuggingFace model identifier")
+    device: Optional[str] = Field(default=None, description="Device: 'cuda' or 'cpu'")
+
+
+class ModelInfo(BaseModel):
+    """Model information"""
+    id: str
+    object: Literal["model"] = "model"
+    created: int = 0
+    owned_by: str = "huggingface"
+
+
+class ModelListResponse(BaseModel):
+    """List of models response"""
+    object: Literal["list"] = "list"
+    data: List[ModelInfo]
+
+
+# ============================================================================
+# Chat Completion Schemas (OpenAI-compatible)
+# ============================================================================
 
 class ChatMessage(BaseModel):
     """Chat message"""

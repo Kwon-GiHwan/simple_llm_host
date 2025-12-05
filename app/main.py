@@ -1,9 +1,10 @@
 """
-FastAPI application instance
+FastAPI application instance - Entry point for the API
 """
 from fastapi import FastAPI
 from app.core.config import settings
-from app.api.v1.routes import api_router
+from app.api.routes import router
+from app.services.model_manager import model_manager
 import torch
 
 
@@ -20,8 +21,8 @@ def create_application() -> FastAPI:
         description=settings.API_DESCRIPTION,
     )
 
-    # Include API v1 routes
-    app.include_router(api_router, prefix="/v1")
+    # Include API routes
+    app.include_router(router)
 
     @app.get("/")
     async def root():
@@ -40,10 +41,9 @@ def create_application() -> FastAPI:
     @app.get("/health")
     async def health():
         """Health check endpoint"""
-        from app.services.model_service import model_service
         return {
             "status": "healthy",
-            "loaded_models": len(model_service.list_models()),
+            "loaded_models": len(model_manager.list_models()),
             "cuda_available": torch.cuda.is_available(),
             "cache_dir": settings.HF_CACHE_DIR
         }
