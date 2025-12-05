@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  llm-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface  # HuggingFace 캐시 공유
+    environment:
+      - CUDA_VISIBLE_DEVICES=0  # GPU 사용 시
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]  # GPU 사용 시 (nvidia-docker 필요)
